@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026春季高考 - 网络技术专业院校</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
+    <style>
+        :root {
+            --bg: #F5F5F7; /* 极简暖浅灰 */
+            --card-bg: #FFFFFF;
+            --border: #242426; /* 柔和灰黑 */
+            --shadow: #242426;
+            --text: #242426;
+            --text-sub: #636366;
+            --text-muted: #8E8E93;
+            
+            /* 柔和马卡龙色系 */
+            --pink: #FFCCD5;
+            --blue: #C5E0F5;
+            --yellow: #FDE2AE;
+            --green: #D2EBD4;
+            --purple: #E8D7F5;
+            --accent: #E53935;
+            
+            --tag-chong-text: #B3003B;
+            --tag-wen-text: #006600;
+            --tag-bao-text: #005580;
+            --tag-none-text: #666666;
+            --tag-hard-text: #FFFFFF;
+            
+            --r-sm: 10px; --r-md: 16px; --t: 2.5px; /* 柔和圆角与边框线 */
+        }
+        .dark {
+            --bg: #1A1A1C; /* 柔和暗夜灰 */
+            --card-bg: #242426; /* 柔和卡片灰 */
+            --border: #48484A; /* 柔和中灰边框，绝不刺眼 */
+            --shadow: #0A0A0C;
+            --text: #E5E5EA; /* 柔和灰白字 */
+            --text-sub: #AEAEB2;
+            --text-muted: #7C7C80;
+            
+            /* 保护视力、低饱和度微调 */
+            --pink: #422228;
+            --blue: #1B2E3C;
+            --yellow: #3A301D;
+            --green: #1C3322;
+            --purple: #2C1D3A;
+            --accent: #E5534B;
+            
+            --tag-chong-text: #FFB3C1;
+            --tag-wen-text: #B4E3B9;
+            --tag-bao-text: #A5D2F6;
+            --tag-none-text: #AEAEB2;
+            --tag-hard-text: #E5E5EA;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 40px 20px; line-height: 1.5; transition: all 0.3s; }
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        header {
+            background: var(--blue); border: var(--t) solid var(--border);
+            border-radius: var(--r-md); padding: 30px; margin-bottom: 40px;
+            box-shadow: 6px 6px 0 var(--shadow); text-align: center; position: relative;
+        }
+        header h1 { font-size: 2.2rem; margin-bottom: 10px; letter-spacing: 2px; }
+        header p { font-size: 1rem; opacity: 0.8; }
+        .header-actions { margin-top: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .nav-link {
+            display: inline-block; padding: 8px 20px;
+            background: var(--yellow); border: 2px solid var(--border);
+            border-radius: 20px; text-decoration: none; color: var(--text);
+            font-weight: 700; font-size: 0.9rem; transition: all 0.15s; cursor: pointer;
+        }
+        .nav-link:hover { transform: translateY(-2px); box-shadow: 3px 3px 0 var(--shadow); }
+
+        .theme-toggle {
+            position: absolute; top: 15px; right: 15px;
+            background: var(--card-bg); border: 2px solid var(--border);
+            border-radius: 50%; width: 40px; height: 40px; cursor: pointer;
+            font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .theme-toggle:hover { transform: scale(1.1) rotate(15deg); }
+
+
+        .card {
+            background: var(--card-bg); border: var(--t) solid var(--border);
+            border-radius: var(--r-md); padding: 25px; margin-bottom: 30px;
+            box-shadow: 6px 6px 0 var(--shadow);
+        }
+        .card h2 {
+            font-size: 1.4rem; margin-bottom: 20px; padding-bottom: 8px;
+            border-bottom: var(--t) dashed var(--border); display: inline-block;
+        }
+
+        .stat-bar {
+            display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;
+            padding: 15px; background: var(--yellow); border: 2px solid var(--border); border-radius: var(--r-sm);
+        }
+        .stat-item { font-weight: 600; font-size: 0.9rem; }
+        .stat-num { color: var(--accent); font-weight: 800; }
+
+        .form-row { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; align-items: flex-end; }
+        .form-group { flex: 1; min-width: 200px; }
+        .form-group label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 0.9rem; }
+        .form-input {
+            width: 100%; padding: 12px; border: var(--t) solid var(--border);
+            border-radius: var(--r-sm); background: var(--card-bg); color: var(--text);
+            outline: none; font-size: 1.05rem; transition: all 0.15s;
+        }
+        .form-input:focus { background: var(--yellow); box-shadow: 3px 3px 0 var(--shadow); }
+
+        .rank-indicator {
+            display: flex; align-items: center; gap: 15px; background: var(--purple);
+            border: var(--t) solid var(--border); border-radius: var(--r-sm);
+            padding: 12px 20px; font-weight: 700; box-shadow: 4px 4px 0 var(--shadow);
+        }
+
+        .filter-section { display: flex; flex-direction: column; gap: 15px; margin-top: 15px; }
+        .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .filter-label { font-weight: 700; font-size: 0.85rem; width: 80px; }
+
+        .filter-btn, .sort-btn {
+            padding: 8px 16px; font-weight: 700; font-size: 0.85rem;
+            border: 2px solid var(--border); border-radius: 20px;
+            cursor: pointer; background: var(--card-bg); color: var(--text);
+            transition: all 0.15s;
+        }
+        .filter-btn.active, .sort-btn.active { background: var(--yellow); box-shadow: 2px 2px 0 var(--shadow); }
+        .filter-btn:hover, .sort-btn:hover { transform: translateY(-1px); }
+
+        .sort-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
+        .sort-label { font-weight: 700; font-size: 0.9rem; margin-right: 5px; }
+
+        .search-bar { margin-bottom: 20px; }
+        .search-input {
+            width: 100%; padding: 12px;
+            border: var(--t) solid var(--border); border-radius: var(--r-sm);
+            font-size: 1rem; background: var(--card-bg); color: var(--text);
+            outline: none; transition: all 0.2s;
+        }
+        .search-input:focus { background: var(--blue); box-shadow: 3px 3px 0 var(--shadow); }
+        .search-input::placeholder { color: var(--text-muted); }
+
+        .tag-chong { background: var(--pink) !important; color: var(--tag-chong-text) !important; border-color: var(--border) !important; }
+        .tag-wen { background: var(--green) !important; color: var(--tag-wen-text) !important; border-color: var(--border) !important; }
+        .tag-bao { background: var(--blue) !important; color: var(--tag-bao-text) !important; border-color: var(--border) !important; }
+        .tag-none { background: #e0e0e0 !important; color: var(--tag-none-text) !important; border-color: var(--border) !important; }
+        .tag-hard { background: #333 !important; color: var(--tag-hard-text) !important; border-color: var(--border) !important; }
+
+        .school-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+        .school-card {
+            background: var(--card-bg); border: var(--t) solid var(--border);
+            border-radius: var(--r-md); padding: 22px; position: relative;
+            box-shadow: 5px 5px 0 var(--shadow); transition: all 0.2s;
+        }
+        .school-card:hover { transform: translate(-3px, -3px); box-shadow: 9px 9px 0 var(--shadow); }
+        .school-header { position: relative; margin-bottom: 12px; padding-right: 40px; }
+        .school-name { font-size: 1.25rem; font-weight: 800; line-height: 1.3; display: inline-block; }
+        .school-code {
+            display: inline-block;
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            font-weight: 700;
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            padding: 2px 6px;
+            border-radius: var(--r-sm);
+            vertical-align: middle;
+            margin-left: 8px;
+            white-space: nowrap;
+        }
+        .school-info {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            line-height: 1.8;
+            margin-top: 12px;
+            border-top: 1.5px dashed var(--border);
+            padding-top: 10px;
+        }
+        .school-fee { font-size: 1.15rem; font-weight: 800; color: var(--accent); margin-top: 12px; }
+        .school-note {
+            font-size: 0.8rem;
+            color: var(--accent);
+            margin-top: 6px;
+            font-weight: 700;
+            background: rgba(229, 83, 75, 0.06);
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1.5px dashed var(--accent);
+            display: inline-block;
+        }
+
+        .major-highlight {
+            display: inline-block; padding: 5px 12px; margin: 6px 0;
+            background: var(--green); border: 2px solid var(--border);
+            border-radius: var(--r-sm); font-weight: 700; font-size: 0.95rem;
+        }
+        .rank-highlight {
+            display: inline-block; padding: 8px 14px; margin-top: 12px;
+            background: var(--yellow); border: 2px solid var(--border);
+            border-radius: var(--r-sm); font-weight: 800; font-size: 0.95rem; width: 100%; text-align: center;
+            box-shadow: 2px 2px 0 var(--shadow);
+        }
+        .no-rank {
+            display: inline-block; padding: 8px 14px; margin-top: 12px;
+            background: var(--purple); border: 2px solid var(--border);
+            border-radius: var(--r-sm); font-size: 0.85rem; color: var(--text-sub); font-weight: 700; width: 100%; text-align: center;
+            box-shadow: 2px 2px 0 var(--shadow);
+        }
+
+        .tag {
+            display: inline-block; padding: 3px 10px; font-weight: 700;
+            font-size: 0.75rem; border: 2px solid var(--border);
+            border-radius: 20px; margin-right: 6px; margin-bottom: 6px;
+        }
+        .tag-benke { background: var(--blue); }
+        .tag-zhuanke { background: var(--purple); }
+        .tag-gongban { background: var(--green); }
+        .tag-minban { background: var(--pink); }
+        .tag-tiqian { background: var(--yellow); }
+
+        .fav-btn {
+            position: absolute; top: 12px; right: 12px;
+            background: var(--card-bg); border: 2px solid var(--border); border-radius: 50%;
+            width: 36px; height: 36px; cursor: pointer; font-size: 1.1rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.15s;
+        }
+        .fav-btn:hover { transform: scale(1.15); }
+        .fav-btn.faved { background: var(--yellow); border-color: #D4A017; }
+
+        .empty-msg { text-align: center; padding: 40px; color: var(--text-muted); font-size: 1.1rem; grid-column: 1/-1; }
+        .loading { text-align: center; padding: 40px; color: var(--text-muted); font-size: 1.2rem; }
+
+        .disclaimer {
+            background: var(--purple); border: var(--t) solid var(--border);
+            border-radius: var(--r-sm); padding: 15px; font-weight: 600;
+            box-shadow: 4px 4px 0 var(--shadow); text-align: center; font-size: 0.9rem; margin-top: 20px;
+        }
+
+        footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.85rem; }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.6rem; }
+            .school-grid { grid-template-columns: 1fr; }
+            .filter-row { gap: 6px; }
+        }
+
+        /* 按钮通用 Brutalist 样式 */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 10px 20px; font-weight: 700; font-size: 0.9rem;
+            border: var(--t) solid var(--border); border-radius: var(--r-sm);
+            cursor: pointer; background: var(--card-bg); color: var(--text);
+            transition: all 0.15s; text-decoration: none;
+            box-shadow: 3px 3px 0 var(--shadow);
+            outline: none;
+        }
+        .btn:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--shadow); }
+        .btn:active { transform: translate(1px, 1px); box-shadow: 1.5px 1.5px 0 var(--shadow); }
+        .btn-primary { background: var(--yellow); }
+        .btn-sm { padding: 4px 10px; font-size: 0.75rem; border-width: 2px; }
+
+        /* 模态框与底部抽屉 (Bottom Sheet) 样式 */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6); z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+        }
+        .modal-overlay.show { opacity: 1; pointer-events: auto; }
+        
+        .modal-card {
+            background: var(--card-bg); border: var(--t) solid var(--border);
+            border-radius: var(--r-md); padding: 25px; width: 90%; max-width: 502px;
+            box-shadow: 6px 6px 0 var(--shadow); position: relative;
+            transform: translateY(30px); transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            color: var(--text);
+        }
+        .modal-overlay.show .modal-card { transform: translateY(0); }
+        .modal-drag-handle { display: none; width: 45px; height: 5px; background: var(--text-muted); border-radius: 3px; margin: 0 auto 15px auto; opacity: 0.5; }
+        .modal-close-btn {
+            position: absolute; top: 15px; right: 15px; background: none; border: none;
+            font-size: 1.8rem; cursor: pointer; color: var(--text); line-height: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .modal-overlay { align-items: flex-end; }
+            .modal-card {
+                width: 100%; max-width: 100%; border-bottom: none; border-radius: var(--r-md) var(--r-md) 0 0;
+                padding: 20px 20px 40px 20px; transform: translateY(100%);
+                box-shadow: none; border-top: var(--t) solid var(--border);
+                border-left: none; border-right: none;
+            }
+            .modal-overlay.show .modal-card { transform: translateY(0); }
+            .modal-drag-handle { display: block; }
+        }
+
+        /* 移动端吸顶快捷成绩定位栏 */
+        .sticky-bar {
+            position: fixed; top: 0; left: 0; right: 0; background: var(--yellow);
+            border-bottom: var(--t) solid var(--border); z-index: 900;
+            padding: 10px 20px; transform: translateY(-100%); transition: transform 0.25s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: none;
+            color: #242426; /* 始终使用深色字以保持高对比度 neobrutalist 视觉 */
+        }
+        .sticky-bar.show { transform: translateY(0); }
+        .sticky-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .sticky-info { display: flex; gap: 15px; font-size: 0.9rem; font-weight: 700; }
+        
+        @media (max-width: 768px) {
+            .sticky-bar { display: block; }
+        }
+
+        /* 免责声明气泡 */
+        .disclaimer-badge {
+            display: inline-block;
+            padding: 10px 24px;
+            background: #FFD2D2; /* 柔和红 */
+            color: #242426;
+            border: var(--t) solid var(--border);
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            box-shadow: 3px 3px 0 var(--shadow);
+            letter-spacing: 0.5px;
+        }
+        .dark .disclaimer-badge {
+            background: #E5534B; /* 深色下醒目的柔和红 */
+            color: #FFFFFF;
+        }
+
+        /* 学费滑动条 Brutalist 美化 */
+        #feeSlider {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            cursor: pointer;
+            height: 24px;
+        }
+        #feeSlider::-webkit-slider-runnable-track {
+            background: var(--bg);
+            border: var(--t) solid var(--border);
+            border-radius: 10px;
+            height: 12px;
+            box-shadow: 2px 2px 0 var(--shadow);
+        }
+        #feeSlider::-moz-range-track {
+            background: var(--bg);
+            border: var(--t) solid var(--border);
+            border-radius: 10px;
+            height: 12px;
+            box-shadow: 2px 2px 0 var(--shadow);
+        }
+        #feeSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            margin-top: -6px;
+            background-color: var(--yellow);
+            border: var(--t) solid var(--border);
+            border-radius: 50%;
+            height: 20px;
+            width: 20px;
+            box-shadow: 2px 2px 0 var(--shadow);
+            transition: all 0.15s;
+        }
+        #feeSlider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background-color: var(--pink);
+        }
+        #feeSlider::-moz-range-thumb {
+            background-color: var(--yellow);
+            border: var(--t) solid var(--border);
+            border-radius: 50%;
+            height: 20px;
+            width: 20px;
+            box-shadow: 2px 2px 0 var(--shadow);
+            transition: all 0.15s;
+        }
+        #feeSlider::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            background-color: var(--pink);
+        }
+    </style>
+</head>
+<body>
+<div id="stickyHeader" class="sticky-bar">
+    <div class="sticky-content">
+        <span style="font-weight:800; font-size:0.95rem;">📊 网络技术成绩定位</span>
+        <div class="sticky-info">
+            <span>分数: <strong id="stickyScore">--</strong></span>
+            <span>位次: <strong id="stickyRank" style="color:var(--accent);">--</strong></span>
+        </div>
+        <button class="btn btn-sm" onclick="scrollToControl()" style="padding: 4px 10px; font-size:0.75rem; margin:0; box-shadow:1.5px 1.5px 0 var(--shadow); background:var(--card-bg);">调整</button>
+    </div>
+</div>
+
+<div class="container">
+    <header>
+        <button class="theme-toggle" onclick="toggleTheme()" title="切换暗色模式">🌙</button>
+        <h1>网络技术专业 · 可报院校</h1>
+        <p>2026年春季高考招生计划</p>
+        <div class="header-actions">
+            <span class="disclaimer-badge">
+                ⚠️ 数据由AI清洗，仅供参考
+            </span>
+        </div>
+    </header>
+
+    <div id="loadingMsg" class="loading">正在加载数据库...</div>
+
+    <div id="mainContent" style="display: none;">
+        <div class="card">
+            <h2>智能匹配与过滤</h2>
+            <div class="search-bar">
+                <input type="text" class="search-input" id="searchInput" placeholder="输入院校名称或专业搜索...">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group" style="flex: 1.5; min-width: 250px;">
+                    <label for="scoreInput">📊 输入春季高考分数（网络技术）</label>
+                    <div style="display: flex; gap: 10px; align-items: stretch;">
+                        <input type="number" id="scoreInput" class="form-input" placeholder="请输入您的分数（例如 560）" min="0" max="750" style="flex: 1; min-width: 0;">
+                        <button class="btn" onclick="resetAllFilters()" style="background: var(--pink); color: var(--text); padding: 0 16px; font-size: 0.95rem; font-weight: 700; cursor: pointer; white-space: nowrap; border-radius: var(--r-sm); border: var(--t) solid var(--border); box-shadow: 3px 3px 0 var(--shadow); transition: all 0.15s;">
+                            重置全部 ↩️
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group" id="rankIndicatorWrapper" style="display: none; flex: 2; min-width: 280px;">
+                    <label>全省参考位次看板</label>
+                    <div class="rank-indicator">
+                        <span>省位次：第 <span id="userRankVal" style="color:var(--accent); font-size:1.3rem;">--</span> 名</span>
+                        <span style="border-left:2px solid var(--border); height:20px;"></span>
+                        <span id="lineCompareVal">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-row">
+                    <span class="filter-label">智能推荐：</span>
+                    <button class="filter-btn active" data-rec="all" onclick="setRecFilter('all', this)">全部院校</button>
+                    <button class="filter-btn tag-chong" data-rec="chong" onclick="setRecFilter('chong', this)" style="display:none;">可冲 🔴</button>
+                    <button class="filter-btn tag-wen" data-rec="wen" onclick="setRecFilter('wen', this)" style="display:none;">稳妥 🟢</button>
+                    <button class="filter-btn tag-bao" data-rec="bao" onclick="setRecFilter('bao', this)" style="display:none;">保底 🔵</button>
+                </div>
+                
+                <div class="filter-row">
+                    <span class="filter-label">基础分类：</span>
+                    <button class="filter-btn active" data-filter="all" onclick="setFilter('all', this)">全部</button>
+                    <button class="filter-btn" data-filter="本科" onclick="setFilter('本科', this)">本科</button>
+                    <button class="filter-btn" data-filter="专科" onclick="setFilter('专科', this)">专科</button>
+                    <button class="filter-btn" data-filter="公办" onclick="setFilter('公办', this)">公办</button>
+                    <button class="filter-btn" data-filter="民办" onclick="setFilter('民办', this)">民办</button>
+                    <button class="filter-btn" data-filter="fav" onclick="setFilter('fav', this)">⭐ 仅收藏</button>
+                </div>
+                
+                <div class="filter-row">
+                    <span class="filter-label">学费上限：</span>
+                    <input type="range" id="feeSlider" min="0" max="30000" step="500" value="30000" style="flex:1;" oninput="handleFeeSlider(this)">
+                    <span id="feeLimitVal" style="font-weight:700; width:100px; text-align:right;">30,000 元</span>
+                </div>
+
+                <div class="sort-bar">
+                    <span class="sort-label">排序方式：</span>
+                    <button class="sort-btn active" onclick="setSort('rank', this)">参考位次↑</button>
+                    <button class="sort-btn" onclick="setSort('rank_desc', this)">参考位次↓</button>
+                    <button class="sort-btn" onclick="setSort('fee', this)">学费↑</button>
+                    <button class="sort-btn" onclick="setSort('fee_desc', this)">学费↓</button>
+                    <button class="sort-btn" onclick="setSort('plan', this)">计划数↓</button>
+                    <button class="sort-btn" onclick="setSort('name', this)">校名</button>
+                </div>
+            </div>
+            
+            <div class="stat-bar" id="statBar"></div>
+        </div>
+
+        <div class="school-grid" id="schoolGrid"></div>
+
+        <div class="disclaimer">
+            ⚠️ 以上内容由 AI 自动从招生计划PDF中提取整理，仅供参考，请以山东省教育招生考试院官方发布为准。
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>2026春季高考网络技术专业院校查询 | 数据来源：山东省教育招生考试院</p>
+</footer>
+
+<script>
+    // 2026春季高考网络技术专业一分一段数据 (分数 -> 累计位次)
+    const NET_TECH_SCORE_RANK = {
+        651: 1, 638: 2, 633: 4, 632: 5, 631: 6, 628: 8, 626: 9, 625: 10, 624: 11, 622: 12,
+        621: 15, 618: 17, 617: 19, 616: 20, 615: 24, 614: 25, 613: 26, 612: 27, 611: 29, 610: 30,
+        609: 31, 608: 33, 607: 37, 606: 41, 605: 47, 604: 52, 603: 56, 602: 58, 601: 63, 600: 67,
+        599: 70, 598: 74, 597: 79, 596: 81, 595: 86, 594: 91, 593: 93, 592: 97, 591: 104, 590: 109,
+        589: 115, 588: 120, 587: 123, 586: 128, 585: 129, 584: 137, 583: 142, 582: 146, 581: 156, 580: 165,
+        579: 169, 578: 179, 577: 181, 576: 189, 575: 197, 574: 206, 573: 214, 572: 221, 571: 231, 570: 242,
+        569: 258, 568: 270, 567: 276, 566: 286, 565: 294, 564: 312, 563: 323, 562: 341, 561: 353, 560: 367,
+        559: 373, 558: 390, 557: 397, 556: 417, 555: 429, 554: 448, 553: 463, 552: 481, 551: 494, 550: 513,
+        549: 523, 548: 541, 547: 556, 546: 574, 545: 588, 544: 609, 543: 624, 542: 638, 541: 658, 540: 686,
+        539: 704, 538: 730, 537: 747, 536: 765, 535: 785, 534: 808, 533: 825, 532: 846, 531: 871, 530: 902,
+        529: 923, 528: 947, 527: 978, 526: 1007, 525: 1026, 524: 1056, 523: 1079, 522: 1109, 521: 1129, 520: 1152,
+        519: 1184, 518: 1204, 517: 1238, 516: 1269, 515: 1297, 514: 1324, 513: 1354, 512: 1378, 511: 1403, 510: 1438,
+        509: 1461, 508: 1496, 507: 1530, 506: 1561, 505: 1590, 504: 1622, 503: 1642, 502: 1675, 501: 1709, 500: 1740,
+        499: 1768, 498: 1801, 497: 1832, 496: 1867, 495: 1899, 494: 1932, 493: 1963, 492: 2004, 491: 2038, 490: 2064,
+        489: 2097, 488: 2132, 487: 2167, 486: 2197, 485: 2228, 484: 2261, 483: 2296, 482: 2322, 481: 2355, 480: 2390,
+        479: 2420, 478: 2451, 477: 2476, 476: 2505, 475: 2533, 474: 2577, 473: 2603, 472: 2639, 471: 2673, 470: 2707,
+        469: 2736, 468: 2769, 467: 2795, 466: 2824, 465: 2862, 464: 2894, 463: 2928, 462: 2955, 461: 2984, 460: 3012,
+        459: 3042, 458: 3068, 457: 3097, 456: 3123, 455: 3154, 454: 3179, 453: 3209, 452: 3241, 451: 3274, 450: 3297,
+        449: 3326, 448: 3350, 447: 3376, 446: 3409, 445: 3439, 444: 3469, 443: 3505, 442: 3527, 441: 3552, 440: 3583,
+        439: 3607, 438: 3632, 437: 3662, 436: 3687, 435: 3717, 434: 3740, 433: 3766, 432: 3788, 431: 3817, 430: 3843,
+        429: 3870, 428: 3894, 427: 3918, 426: 3943, 425: 3971, 424: 3986, 423: 4004, 422: 4022, 421: 4040, 420: 4059,
+        419: 4075, 418: 4091, 417: 4110, 416: 4124, 415: 4141, 414: 4152, 413: 4167, 412: 4178, 411: 4192, 410: 4209,
+        409: 4226, 408: 4240, 407: 4257, 406: 4272, 405: 4284, 404: 4296, 403: 4311, 402: 4323, 401: 4333, 400: 4347,
+        399: 4358, 398: 4370, 397: 4382, 396: 4394, 395: 4403, 394: 4413, 393: 4421, 392: 4428, 391: 4437, 390: 4443,
+        389: 4449, 388: 4458, 387: 4467, 386: 4474, 385: 4481, 384: 4486, 383: 4492, 382: 4497, 381: 4504, 380: 4511,
+        379: 4515, 378: 4522, 377: 4528, 376: 4531, 375: 4536, 374: 4541, 373: 4545, 372: 4549, 371: 4554, 370: 4558,
+        369: 4561, 368: 4565, 367: 4570, 366: 4574, 365: 4579, 364: 4583, 363: 4587, 362: 4591, 361: 4594, 360: 4597,
+        359: 4600, 358: 4602, 357: 4604, 356: 4606, 355: 4609, 354: 4612, 353: 4615, 352: 4618, 351: 4621, 350: 4624,
+        349: 4626, 348: 4629, 347: 4631, 346: 4633, 345: 4635, 344: 4637, 343: 4639, 342: 4641, 341: 4643, 340: 4645,
+        339: 4647, 338: 4649, 337: 4651, 336: 4653, 335: 4655, 334: 4657, 333: 4659, 332: 4661, 331: 4663, 330: 4665,
+        329: 4667, 328: 4669, 327: 4671, 326: 4673, 325: 4675, 324: 4677, 323: 4679, 322: 4680, 321: 4681, 320: 4682,
+        319: 4683, 318: 4685, 317: 4687, 316: 4689, 315: 4691, 314: 4693, 313: 4695, 312: 4697, 311: 4699, 310: 4701,
+        309: 4703, 308: 4705, 307: 4707, 306: 4709, 305: 4711, 304: 4713, 303: 4715, 302: 4717, 301: 4719, 300: 4721,
+        299: 4723, 298: 4725, 297: 4727, 296: 4729, 295: 4731, 294: 4733, 293: 4735, 292: 4737, 291: 4739, 290: 4741,
+        289: 4743, 288: 4745, 287: 4747, 286: 4749, 285: 4751, 284: 4753, 283: 4755, 282: 4757, 281: 4759, 280: 4761,
+        279: 4763, 278: 4765, 277: 4767, 276: 4769, 275: 4771, 274: 4773, 273: 4775, 272: 4777, 271: 4779, 270: 4781,
+        269: 4783, 268: 4785, 267: 4787, 266: 4789, 265: 4791, 264: 4793, 263: 4795, 262: 4797, 261: 4799, 260: 4801,
+        259: 4803, 258: 4805, 257: 4807, 256: 4809, 255: 4811, 254: 4813, 253: 4815, 252: 4817, 251: 4819, 250: 4821,
+        249: 4823, 248: 4825, 247: 4827, 246: 4829, 245: 4831, 244: 4833, 243: 4835, 242: 4837, 241: 4839, 240: 4841,
+        238: 4843, 237: 4845, 236: 4847, 235: 4849, 234: 4851, 233: 4853, 232: 4854, 231: 4856, 230: 4857, 229: 4859,
+        228: 4861, 227: 4863, 226: 4865, 225: 4867, 224: 4869, 223: 4871, 222: 4873, 221: 4875, 220: 4876, 219: 4878,
+        218: 4880, 217: 4882, 216: 4884, 215: 4886, 214: 4888, 213: 4890, 212: 4892, 211: 4895, 210: 4897, 209: 4898,
+        208: 4900, 207: 4901, 206: 4903, 205: 4905, 204: 4911, 203: 4913, 202: 4914, 201: 4916, 200: 4918, 199: 4919,
+        198: 4920, 197: 4921, 196: 4923, 195: 4924, 194: 4926, 193: 4927, 192: 4929, 191: 4931, 190: 4933, 189: 4934,
+        188: 4936, 187: 4941, 186: 4942, 185: 4944, 184: 4946, 183: 4948, 182: 4950, 181: 4951, 180: 4953, 179: 4954,
+        178: 4956, 177: 4958, 175: 4959, 173: 4960, 172: 4961, 171: 4964, 169: 4966, 168: 4967, 167: 4968, 166: 4970,
+        165: 4971, 164: 4973, 163: 4975, 162: 4976, 161: 4978, 160: 4980, 159: 4982, 158: 4983, 157: 4984, 156: 4985,
+        155: 4986, 154: 4987, 153: 4989, 152: 4991, 151: 4993, 149: 4994, 148: 4997, 147: 4998, 146: 4999, 145: 5000,
+        144: 5002, 143: 5006, 142: 5008, 141: 5009, 140: 5011, 139: 5012, 138: 5014, 137: 5016, 136: 5019, 135: 5020,
+        134: 5021, 133: 5022, 132: 5023, 131: 5025, 130: 5027, 129: 5030, 128: 5031, 127: 5033, 126: 5034, 125: 5036,
+        124: 5038, 123: 5039, 122: 5042, 121: 5043, 120: 5046, 119: 5048, 118: 5053, 117: 5055, 116: 5057, 115: 5059,
+        114: 5061, 113: 5064, 112: 5065, 110: 5067, 109: 5070, 108: 5073, 107: 5075, 106: 5076, 105: 5077, 104: 5078,
+        103: 5081, 102: 5085, 101: 5086, 100: 5087, 99: 5089, 98: 5091, 97: 5093, 96: 5095, 95: 5097, 94: 5098,
+        93: 5099, 92: 5100, 91: 5101, 90: 5103, 89: 5104, 88: 5105, 87: 5106, 86: 5107, 85: 5109, 84: 5110,
+        83: 5111, 82: 5112, 80: 5113, 79: 5115, 78: 5116, 77: 5117, 76: 5118, 75: 5119, 74: 5120, 73: 5121,
+        72: 5122, 70: 5123, 69: 5124, 60: 5125, 59: 5126, 58: 5127, 57: 5128, 55: 5129, 54: 5130, 53: 5132,
+        51: 5133, 50: 5134, 49: 5135, 48: 5136, 47: 5137, 43: 5138, 40: 5139, 38: 5140, 37: 5141, 34: 5142,
+        22: 5143, 18: 5144, 11: 5145, 0: 5166
+    };
+
+    // 计算分数对应的省累计位次
+    function getRankByScore(score) {
+        if (score === null || isNaN(score)) return null;
+        score = Math.max(0, Math.min(750, score));
+        if (NET_TECH_SCORE_RANK[score] !== undefined) {
+            return NET_TECH_SCORE_RANK[score];
+        }
+        // 模糊向下匹配
+        const scores = Object.keys(NET_TECH_SCORE_RANK).map(Number).sort((a, b) => b - a);
+        for (let s of scores) {
+            if (score >= s) return NET_TECH_SCORE_RANK[s];
+        }
+        return NET_TECH_SCORE_RANK[scores[scores.length - 1]];
+    }
+
+    // 计算推荐档次
+    function getRecommendLevel(schoolRefRank, userRank) {
+        if (!schoolRefRank || schoolRefRank === 0) {
+            return { label: '无历史参考', class: 'tag-none', level: 'none' };
+        }
+        if (!userRank) return null;
+        
+        // 动态计算冲、稳的位次阈值，避免高低分段出现空列表
+        const chongLimit = Math.max(80, Math.round(userRank * 0.2));  // 可冲位次浮动范围
+        const wenLimit = Math.max(200, Math.round(userRank * 0.4));   // 稳妥位次浮动范围
+        
+        const diff = schoolRefRank - userRank;
+        
+        if (diff < -chongLimit) {
+            return { label: '难度极高', class: 'tag-hard', level: 'hard' };
+        } else if (diff >= -chongLimit && diff < 0) {
+            return { label: '可冲 🔴', class: 'tag-chong', level: 'chong' };
+        } else if (diff >= 0 && diff < wenLimit) {
+            return { label: '稳妥 🟢', class: 'tag-wen', level: 'wen' };
+        } else {
+            return { label: '保底 🔵', class: 'tag-bao', level: 'bao' };
+        }
+    }
+
+    const FAV_KEY = 'spring_gaokao_favorites';
+    const THEME_KEY = 'spring_gaokao_theme';
+
+    let db = null;
+    let allSchools = [];
+    let currentFilter = 'all';
+    let currentSort = 'rank';
+    let searchKeyword = '';
+
+    // 暗色模式
+    function toggleTheme() {
+        const isDark = document.body.classList.toggle('dark');
+        localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
+        document.querySelector('.theme-toggle').textContent = isDark ? '☀️' : '🌙';
+    }
+    function initTheme() {
+        const themeToggleBtn = document.querySelector('.theme-toggle');
+        const localTheme = localStorage.getItem(THEME_KEY);
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (localTheme === 'dark' || (!localTheme && systemPrefersDark)) {
+            document.body.classList.add('dark');
+            if (themeToggleBtn) themeToggleBtn.textContent = '☀️';
+        } else {
+            document.body.classList.remove('dark');
+            if (themeToggleBtn) themeToggleBtn.textContent = '🌙';
+        }
+    }
+    
+    // 监听系统主题变化自动同步
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        if (!localStorage.getItem(THEME_KEY)) {
+            const themeToggleBtn = document.querySelector('.theme-toggle');
+            if (e.matches) {
+                document.body.classList.add('dark');
+                if (themeToggleBtn) themeToggleBtn.textContent = '☀️';
+            } else {
+                document.body.classList.remove('dark');
+                if (themeToggleBtn) themeToggleBtn.textContent = '🌙';
+            }
+        }
+    });
+
+    // 收藏
+    function getFavs() {
+        try { return JSON.parse(localStorage.getItem(FAV_KEY)) || []; } catch { return []; }
+    }
+    function saveFavs(favs) { localStorage.setItem(FAV_KEY, JSON.stringify(favs)); }
+    function isFav(id) { return getFavs().includes(id); }
+    function toggleFav(id) {
+        let favs = getFavs();
+        if (favs.includes(id)) { favs = favs.filter(f => f !== id); }
+        else { favs.push(id); }
+        saveFavs(favs);
+        render();
+    }
+    function showFavOnly() {
+        currentFilter = 'fav';
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('.filter-btn[data-filter="fav"]').classList.add('active');
+        render();
+    }
+
+    async function init() {
+        initTheme();
+        try {
+            const SQL = await initSqlJs({ locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/${f}` });
+            const resp = await fetch('data/gaokao.db');
+            const buf = await resp.arrayBuffer();
+            db = new SQL.Database(new Uint8Array(buf));
+
+            const res = db.exec('SELECT * FROM school ORDER BY fee');
+            allSchools = res[0].values.map(r => ({
+                id: r[0], batch: r[1], code: r[2], name: r[3], major: r[4],
+                type: r[5], years: r[6], plan_count: r[7], fee: r[8], note: r[9],
+                ref_score: r[10] || 0, ref_rank: r[11] || 0
+            }));
+
+            document.getElementById('loadingMsg').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            render();
+        } catch (e) {
+            console.error(e);
+            document.getElementById('loadingMsg').textContent = '加载失败，请通过HTTP访问并确保 data/gaokao.db 存在';
+        }
+    }
+
+    function setFilter(f, btn) {
+        currentFilter = f;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        render();
+    }
+    function setSort(s, btn) {
+        currentSort = s;
+        document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        render();
+    }
+
+    let userScore = null;
+    let userRank = null;
+    let recFilter = 'all';
+    let maxFeeLimit = 30000;
+
+    // 绑定成绩输入框事件
+    document.getElementById('scoreInput').addEventListener('input', function() {
+        const val = parseInt(this.value.trim());
+        if (isNaN(val) || val <= 0) {
+            userScore = null;
+            userRank = null;
+            document.getElementById('rankIndicatorWrapper').style.display = 'none';
+            document.querySelectorAll('.filter-btn[data-rec]').forEach(b => {
+                if (b.dataset.rec !== 'all') b.style.display = 'none';
+            });
+            recFilter = 'all';
+            document.querySelectorAll('.filter-btn[data-rec]').forEach(b => b.classList.remove('active'));
+            document.querySelector('.filter-btn[data-rec="all"]').classList.add('active');
+        } else {
+            userScore = val;
+            userRank = getRankByScore(val);
+            document.getElementById('userRankVal').textContent = userRank;
+            
+            // 本科控制线 491 分
+            const lineCompare = document.getElementById('lineCompareVal');
+            if (val >= 491) {
+                lineCompare.textContent = '已过本科线';
+                lineCompare.style.color = 'var(--tag-wen-text)';
+            } else {
+                lineCompare.textContent = '未过本科线';
+                lineCompare.style.color = 'var(--tag-chong-text)';
+            }
+            document.getElementById('rankIndicatorWrapper').style.display = 'block';
+            
+            // 显示推荐按钮
+            document.querySelectorAll('.filter-btn[data-rec]').forEach(b => {
+                b.style.display = 'inline-block';
+            });
+        }
+        render();
+    });
+
+    function handleFeeSlider(slider) {
+        maxFeeLimit = parseInt(slider.value);
+        document.getElementById('feeLimitVal').textContent = maxFeeLimit.toLocaleString() + ' 元';
+        render();
+    }
+
+    function setRecFilter(rec, btn) {
+        recFilter = rec;
+        document.querySelectorAll('.filter-btn[data-rec]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        render();
+    }
+
+    function getFiltered() {
+        let list = allSchools;
+        const favs = getFavs();
+
+        // 1. 基础批次与性质过滤
+        if (currentFilter === '本科') list = list.filter(s => s.batch !== '专科批');
+        else if (currentFilter === '专科') list = list.filter(s => s.batch === '专科批');
+        else if (currentFilter === '公办') list = list.filter(s => s.type === '公办');
+        else if (currentFilter === '民办') list = list.filter(s => s.type === '民办');
+        else if (currentFilter === 'fav') list = list.filter(s => favs.includes(s.id));
+
+        // 2. 学费过滤
+        list = list.filter(s => (s.fee || 0) <= maxFeeLimit);
+
+        // 3. 关键字搜索过滤
+        if (searchKeyword) {
+            list = list.filter(s => s.name.includes(searchKeyword) || s.major.includes(searchKeyword));
+        }
+
+        // 4. 成绩及推荐档次过滤
+        if (userRank !== null) {
+            list = list.map(s => {
+                const rec = getRecommendLevel(s.ref_rank, userRank);
+                return { ...s, _rec: rec };
+            });
+            
+            // 如果是选择特定推荐分类，进行筛选；否则全部显示，保留“难度极高”在全部列表中的可见性
+            if (recFilter !== 'all') {
+                list = list.filter(s => s._rec && s._rec.level === recFilter);
+            }
+        } else {
+            list = list.map(s => {
+                return { ...s, _rec: null };
+            });
+        }
+
+        // 5. 排序逻辑
+        if (currentSort === 'fee') list.sort((a, b) => (a.fee || 999999) - (b.fee || 999999));
+        else if (currentSort === 'fee_desc') list.sort((a, b) => (b.fee || 0) - (a.fee || 0));
+        else if (currentSort === 'plan') list.sort((a, b) => b.plan_count - a.plan_count);
+        else if (currentSort === 'name') list.sort((a, b) => a.name.localeCompare(b.name));
+        else if (currentSort === 'rank') list.sort((a, b) => {
+            if (a.ref_rank === 0 && b.ref_rank === 0) return 0;
+            if (a.ref_rank === 0) return 1;
+            if (b.ref_rank === 0) return -1;
+            return a.ref_rank - b.ref_rank;
+        });
+        else if (currentSort === 'rank_desc') list.sort((a, b) => {
+            if (a.ref_rank === 0 && b.ref_rank === 0) return 0;
+            if (a.ref_rank === 0) return 1;
+            if (b.ref_rank === 0) return -1;
+            return b.ref_rank - a.ref_rank;
+        });
+
+        return list;
+    }
+
+    function render() {
+        const list = getFiltered();
+        const total = list.length;
+        const benke = list.filter(s => s.batch !== '专科批').length;
+        const zhuanke = total - benke;
+        const gongban = list.filter(s => s.type === '公办').length;
+        const minban = total - gongban;
+        const favCount = getFavs().length;
+
+        document.getElementById('statBar').innerHTML = `
+            <span class="stat-item">共 <span class="stat-num">${total}</span> 个专业</span>
+            <span class="stat-item">本科 <span class="stat-num">${benke}</span></span>
+            <span class="stat-item">专科 <span class="stat-num">${zhuanke}</span></span>
+            <span class="stat-item">公办 <span class="stat-num">${gongban}</span></span>
+            <span class="stat-item">民办 <span class="stat-num">${minban}</span></span>
+            <span class="stat-item">已收藏 <span class="stat-num">${favCount}</span></span>
+        `;
+
+        const grid = document.getElementById('schoolGrid');
+        if (total === 0) {
+            const msg = currentFilter === 'fav' ? '还没有收藏院校，点击卡片右上角 ⭐ 收藏' : '暂无匹配的院校数据';
+            grid.innerHTML = `<div class="empty-msg">${msg}</div>`;
+            return;
+        }
+
+        grid.innerHTML = list.map(s => {
+            const isBenke = s.batch !== '专科批';
+            const batchLabel = s.batch === '本科提前批' ? '提前批' : (isBenke ? '本科' : '专科');
+            const batchClass = s.batch === '本科提前批' ? 'tag-tiqian' : (isBenke ? 'tag-benke' : 'tag-zhuanke');
+            const typeClass = s.type === '公办' ? 'tag-gongban' : 'tag-minban';
+            const feeStr = s.fee > 0 ? `<div class="school-fee">💰 ${s.fee.toLocaleString()} 元/年</div>` : '<div class="school-fee" style="color:var(--text-muted);">💰 暂无学费数据</div>';
+            const noteStr = s.note ? `<div class="school-note">⚠️ 备注: ${s.note}</div>` : '';
+            const faved = isFav(s.id);
+
+            // 渲染往年参考排名与智能匹配徽章
+            let rankHtml = '';
+            if (s._rec) {
+                rankHtml = `<div class="rank-highlight ${s._rec.class}">往年参考名次: ${s.ref_rank} (推荐档次: ${s._rec.label})</div>`;
+            } else {
+                rankHtml = s.ref_rank > 0 
+                    ? `<div class="rank-highlight">往年参考名次: ${s.ref_rank} · 参考分 ${s.ref_score}</div>`
+                    : `<div class="no-rank">暂无参考名次</div>`;
+            }
+
+            return `<div class="school-card" onclick="showDetail(${s.id})">
+                <button class="fav-btn ${faved ? 'faved' : ''}" onclick="event.stopPropagation();toggleFav(${s.id})" title="${faved ? '取消收藏' : '收藏'}">${faved ? '★' : '☆'}</button>
+                <div class="school-header">
+                    <div class="school-name">
+                        ${s.name}
+                        <span class="school-code">${s.code}</span>
+                    </div>
+                </div>
+                <div style="margin-bottom: 10px;"><span class="tag ${batchClass}">${batchLabel}</span><span class="tag ${typeClass}">${s.type}</span></div>
+                <div class="major-highlight">${s.major}</div>
+                <div class="school-info">
+                    <div>⏱️ 修业年限：<strong>${s.years}年制</strong></div>
+                    <div>👥 招生计划：<strong>${s.plan_count}人</strong></div>
+                    ${noteStr}
+                </div>
+                ${rankHtml}
+                ${feeStr}
+            </div>`;
+        }).join('');
+    }
+
+    document.getElementById('searchInput').addEventListener('input', function() {
+        searchKeyword = this.value.trim();
+        render();
+    });
+
+    function showDetail(id) {
+        const s = allSchools.find(x => x.id === id);
+        if (!s) return;
+        
+        const isBenke = s.batch !== '专科批';
+        const typeClass = s.type === '公办' ? 'tag-gongban' : 'tag-minban';
+        const batchClass = s.batch === '本科提前批' ? 'tag-tiqian' : (isBenke ? 'tag-benke' : 'tag-zhuanke');
+        const feeText = s.fee > 0 ? `${s.fee.toLocaleString()} 元/年` : '待定';
+        
+        let rankText = '';
+        if (userRank) {
+            const rec = getRecommendLevel(s.ref_rank, userRank);
+            rankText = `<div class="rank-highlight ${rec.class}" style="margin: 15px 0;">往年参考名次: ${s.ref_rank} (${rec.label})</div>`;
+        } else {
+            rankText = s.ref_rank > 0 
+                ? `<div class="rank-highlight" style="margin: 15px 0;">往年参考名次: ${s.ref_rank} · 参考分 ${s.ref_score}</div>`
+                : `<div class="no-rank" style="margin: 15px 0;">暂无往年参考名次</div>`;
+        }
+
+        const html = `
+            <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 10px; padding-right: 25px;">${s.name}</h3>
+            <div style="margin-bottom: 15px;">
+                <span class="tag tag-none">代码: ${s.code}</span>
+                <span class="tag ${batchClass}">${s.batch}</span>
+                <span class="tag ${typeClass}">${s.type}</span>
+            </div>
+            <div class="major-highlight" style="font-size:1.1rem; width:100%; display:block; text-align:center;">${s.major}</div>
+            
+            <div style="margin-top: 20px; line-height: 2; font-size: 0.95rem; border-top: 1.5px dashed var(--border); padding-top: 15px;">
+                <div>⏱️ <strong>修业年限</strong>：${s.years} 年制</div>
+                <div>👥 <strong>招生计划</strong>：${s.plan_count} 人</div>
+                <div>💰 <strong>学费标准</strong>：<span style="color:var(--accent); font-weight:800;">${feeText}</span></div>
+                ${s.note ? `<div style="color:var(--accent); font-weight:700; margin-top: 10px; background: rgba(229, 83, 75, 0.06); padding: 6px 12px; border-radius: 6px; border: 1.5px dashed var(--accent);">⚠️ <strong>专业备注</strong>：${s.note}</div>` : ''}
+            </div>
+            ${rankText}
+            <div style="margin-top:25px; display:flex; gap:10px;">
+                <button class="btn btn-primary" style="flex:1;" onclick="copyInfo('${s.name}', '${s.code}', '${s.major}', '${feeText}')">📋 复制主要信息</button>
+                <button class="btn" style="flex:1;" onclick="toggleFav(${s.id}); closeDetail();">⭐ ${isFav(s.id) ? '取消收藏' : '加入收藏'}</button>
+            </div>
+        `;
+        
+        document.getElementById('modalContent').innerHTML = html;
+        document.getElementById('detailModal').classList.add('show');
+    }
+    
+    function closeDetail() {
+        document.getElementById('detailModal').classList.remove('show');
+    }
+    
+    function copyInfo(name, code, major, fee) {
+        const text = `【院校】${name} (代码: ${code})\n【专业】${major}\n【学费】${fee}\n——数据来源：2026春考院校助手`;
+        navigator.clipboard.writeText(text).then(() => {
+            alert('信息已成功复制到剪贴板！');
+        }).catch(err => {
+            alert('复制失败，请手动选择复制。');
+        });
+    }
+
+    // 监听滚动展示吸顶成绩栏
+    window.addEventListener('scroll', function() {
+        const controlCard = document.querySelector('.card');
+        const stickyHeader = document.getElementById('stickyHeader');
+        if (!controlCard || !stickyHeader || userScore === null) {
+            stickyHeader.classList.remove('show');
+            return;
+        }
+        
+        const rect = controlCard.getBoundingClientRect();
+        if (rect.bottom < 0) {
+            stickyHeader.classList.add('show');
+            document.getElementById('stickyScore').textContent = userScore;
+            document.getElementById('stickyRank').textContent = userRank;
+        } else {
+            stickyHeader.classList.remove('show');
+        }
+    });
+    
+    function scrollToControl() {
+        const controlCard = document.querySelector('.card');
+        if (controlCard) {
+            controlCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    function quickFillScore(score) {
+        const scoreInput = document.getElementById('scoreInput');
+        if (scoreInput) {
+            scoreInput.value = score;
+            scoreInput.dispatchEvent(new Event('input'));
+        }
+    }
+
+    function resetAllFilters() {
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) searchInput.value = '';
+        searchKeyword = '';
+        
+        const scoreInput = document.getElementById('scoreInput');
+        if (scoreInput) {
+            scoreInput.value = '';
+            scoreInput.dispatchEvent(new Event('input'));
+        }
+        
+        const feeSlider = document.getElementById('feeSlider');
+        if (feeSlider) {
+            feeSlider.value = 30000;
+            handleFeeSlider(feeSlider);
+        }
+        
+        currentFilter = 'all';
+        recFilter = 'all';
+        document.querySelectorAll('.filter-btn').forEach(b => {
+            if (b.dataset.filter === 'all' || b.dataset.rec === 'all') {
+                b.classList.add('active');
+            } else {
+                b.classList.remove('active');
+            }
+        });
+        
+        render();
+    }
+
+    init();
+</script>
+<div id="detailModal" class="modal-overlay" onclick="closeDetail()">
+    <div class="modal-card" onclick="event.stopPropagation()">
+        <div class="modal-drag-handle"></div>
+        <button class="modal-close-btn" onclick="closeDetail()">×</button>
+        <div id="modalContent"></div>
+    </div>
+</div>
+</body>
+</html>
