@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026春季高考查询</title>
+    <style>
+        :root {
+            --bg: #F9F6F0; --card-bg: #FFFFFF; --border: #1A1A1A; --shadow: #1A1A1A;
+            --text: #1A1A1A; --text-sub: #666; --text-muted: #999;
+            --pink: #FFC2D1; --blue: #B3E5FC; --yellow: #FFE5A3;
+            --green: #C2F0C2; --purple: #E1BEE7;
+            --accent: #E74C3C;
+            --r-sm: 8px; --r-md: 16px; --t: 3px;
+        }
+        .dark {
+            --bg: #1a1a2e; --card-bg: #16213e; --border: #e0e0e0; --shadow: #0f3460;
+            --text: #e0e0e0; --text-sub: #a0a0a0; --text-muted: #707070;
+            --pink: #4a1942; --blue: #1a3a5c; --yellow: #3d3520;
+            --green: #1a3a2a; --purple: #2d1a4e;
+            --accent: #ff6b6b;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; transition: all 0.3s; }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; flex: 1; width: 100%; }
+
+        header {
+            background: var(--yellow); border: var(--t) solid var(--border);
+            border-radius: var(--r-md); padding: 40px; text-align: center;
+            box-shadow: 6px 6px 0 var(--shadow); margin-bottom: 40px; position: relative;
+        }
+        header h1 { font-size: 2.4rem; margin-bottom: 10px; letter-spacing: 2px; }
+        header p { font-size: 1.1rem; opacity: 0.8; }
+
+        .theme-toggle {
+            position: absolute; top: 15px; right: 15px;
+            background: var(--card-bg); border: 2px solid var(--border);
+            border-radius: 50%; width: 40px; height: 40px; cursor: pointer;
+            font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .theme-toggle:hover { transform: scale(1.1) rotate(15deg); }
+
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; margin-bottom: 40px; }
+        .menu-card {
+            background: var(--card-bg); border: var(--t) solid var(--border);
+            border-radius: var(--r-md); padding: 30px; text-align: center;
+            box-shadow: 6px 6px 0 var(--shadow); text-decoration: none; color: var(--text);
+            transition: all 0.15s; cursor: pointer;
+        }
+        .menu-card:hover { transform: translate(-3px, -3px); box-shadow: 9px 9px 0 var(--shadow); }
+        .menu-card:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--shadow); }
+        .menu-icon { font-size: 3rem; margin-bottom: 15px; }
+        .menu-card h2 { font-size: 1.3rem; margin-bottom: 8px; }
+        .menu-card p { font-size: 0.9rem; color: var(--text-sub); }
+
+        .info-card {
+            background: var(--card-bg); border: var(--t) solid var(--border);
+            border-radius: var(--r-md); padding: 25px;
+            box-shadow: 6px 6px 0 var(--shadow); margin-bottom: 30px;
+        }
+        .info-card h3 { font-size: 1.2rem; margin-bottom: 15px; padding-bottom: 8px; border-bottom: var(--t) dashed var(--border); display: inline-block; }
+        .info-row { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 10px; }
+        .info-item { flex: 1; min-width: 200px; padding: 12px; background: var(--yellow); border: 2px solid var(--border); border-radius: var(--r-sm); }
+        .info-label { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 4px; }
+        .info-value { font-weight: 800; font-size: 1.1rem; }
+
+        .control-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .control-table th, .control-table td { padding: 10px; border: 2px solid var(--border); text-align: center; font-size: 0.9rem; }
+        .control-table th { background: var(--blue); }
+        .control-table tr:nth-child(even) td { background: var(--yellow); }
+
+        .disclaimer {
+            background: var(--purple); border: var(--t) solid var(--border);
+            border-radius: var(--r-sm); padding: 18px; font-weight: 600;
+            box-shadow: 4px 4px 0 var(--shadow); text-align: center; font-size: 0.95rem;
+        }
+
+        footer { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 0.8rem; }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.8rem; }
+            .menu-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <button class="theme-toggle" onclick="toggleTheme()" title="切换暗色模式">🌙</button>
+        <h1>2026 春季高考查询</h1>
+        <p>网络技术专业 · 院校数据 · 一分一段表</p>
+    </header>
+
+    <div class="menu-grid">
+        <a class="menu-card" href="schools.html">
+            <div class="menu-icon">🎓</div>
+            <h2>网络技术专业院校</h2>
+            <p>查看所有可报院校 · 收藏对比</p>
+        </a>
+        <a class="menu-card" href="https://www.sdzk.cn" target="_blank">
+            <div class="menu-icon">📋</div>
+            <h2>一分一段表</h2>
+            <p>查询分数位次（官方来源）</p>
+        </a>
+    </div>
+
+    <div class="info-card">
+        <h3>2026年网络技术专业录取控制线</h3>
+        <div class="info-row">
+            <div class="info-item">
+                <div class="info-label">本科控制线</div>
+                <div class="info-value" style="color:#27AE60;">491 分</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">专科控制线</div>
+                <div class="info-value" style="color:#3B82F6;">150 分</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">技能拔尖人才</div>
+                <div class="info-value" style="color:#8B5CF6;">140 分</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-card">
+        <h3>全部专业类别控制线</h3>
+        <table class="control-table">
+            <thead><tr><th>代码</th><th>专业类别</th><th>本科线</th><th>代码</th><th>专业类别</th><th>本科线</th></tr></thead>
+            <tbody>
+                <tr><td>01</td><td>现代农艺</td><td>527</td><td>16</td><td>网络技术</td><td>491</td></tr>
+                <tr><td>02</td><td>烹饪</td><td>550</td><td>17</td><td>软件与应用技术</td><td>540</td></tr>
+                <tr><td>03</td><td>畜牧养殖</td><td>530</td><td>18</td><td>医学技术</td><td>524</td></tr>
+                <tr><td>04</td><td>建筑</td><td>522</td><td>19</td><td>药学</td><td>525</td></tr>
+                <tr><td>05</td><td>机械制造</td><td>552</td><td>20</td><td>护理</td><td>520</td></tr>
+                <tr><td>06</td><td>设备维修</td><td>523</td><td>21</td><td>财税</td><td>576</td></tr>
+                <tr><td>07</td><td>机电技术</td><td>507</td><td>22</td><td>市场营销</td><td>582</td></tr>
+                <tr><td>08</td><td>自动控制</td><td>425</td><td>23</td><td>电子商务</td><td>545</td></tr>
+                <tr><td>09</td><td>电气技术</td><td>530</td><td>24</td><td>国际商务</td><td>586</td></tr>
+                <tr><td>10</td><td>电子技术</td><td>495</td><td>25</td><td>物流管理</td><td>512</td></tr>
+                <tr><td>11</td><td>化工与环境</td><td>546</td><td>26</td><td>酒店管理</td><td>540</td></tr>
+                <tr><td>12</td><td>服装</td><td>510</td><td>27</td><td>旅游管理</td><td>541</td></tr>
+                <tr><td>13</td><td>车辆维修</td><td>513</td><td>28</td><td>公共服务与管理</td><td>548</td></tr>
+                <tr><td>14</td><td>运输</td><td>486</td><td>29</td><td>学前教育</td><td>540</td></tr>
+                <tr><td>15</td><td>数字媒体</td><td>519</td><td>30</td><td>艺术设计</td><td>515</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="disclaimer">
+        ⚠️ 以上内容由 AI 自动从招生计划PDF中提取整理，仅供参考，请以山东省教育招生考试院官方发布为准。
+    </div>
+</div>
+
+<footer>
+    <p>2026春季高考查询系统 | 数据来源：山东省教育招生考试院</p>
+</footer>
+
+<script>
+    const THEME_KEY = 'spring_gaokao_theme';
+    function toggleTheme() {
+        const isDark = document.body.classList.toggle('dark');
+        localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
+        document.querySelector('.theme-toggle').textContent = isDark ? '☀️' : '🌙';
+    }
+    if (localStorage.getItem(THEME_KEY) === 'dark') {
+        document.body.classList.add('dark');
+        document.querySelector('.theme-toggle').textContent = '☀️';
+    }
+</script>
+
+</body>
+</html>
