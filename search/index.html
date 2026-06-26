@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学校自讯 - 大学评价搜索</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fafafa;--surface:#ffffff;--text:#18181b;--text2:#52525b;--text3:#a1a1aa;
+  --border:#e4e4e7;--accent:#2563eb;--accent-light:#eff6ff;--accent-dark:#1d4ed8;
+  --green:#16a34a;--green-light:#f0fdf4;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.04),0 1px 3px rgba(0,0,0,.06);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06),0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg:0 8px 30px rgba(0,0,0,.08);
+  --transition:all .2s cubic-bezier(.4,0,.2,1);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter','Noto Sans SC',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;
+}
+a{color:var(--accent);text-decoration:none}
+
+/* Hero */
+.hero{
+  position:relative;overflow:hidden;
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:80px 24px;text-align:center;
+  background:linear-gradient(160deg,#f0f7ff 0%,#fafafa 40%,#fdf4ff 100%);
+}
+.hero::before{
+  content:'';position:absolute;top:-200px;right:-200px;
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(37,99,235,.06),transparent 70%);
+  pointer-events:none;
+}
+.hero::after{
+  content:'';position:absolute;bottom:-200px;left:-200px;
+  width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(168,85,247,.05),transparent 70%);
+  pointer-events:none;
+}
+.hero-content{position:relative;max-width:680px;margin:0 auto}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:100px;
+  background:var(--surface);border:1px solid var(--border);
+  font-size:.78rem;font-weight:600;color:var(--text2);
+  margin-bottom:28px;box-shadow:var(--shadow);
+}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.hero h1{
+  font-size:clamp(2.2rem,5vw,3.4rem);font-weight:800;
+  letter-spacing:-.03em;line-height:1.15;margin-bottom:16px;
+  color:var(--text);
+}
+.hero h1 .highlight{
+  background:linear-gradient(135deg,var(--accent),#7c3aed);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero p{
+  font-size:1.05rem;color:var(--text2);margin-bottom:40px;
+  max-width:480px;margin-left:auto;margin-right:auto;line-height:1.7;
+}
+
+/* Search */
+.search-wrap{position:relative;max-width:540px;margin:0 auto 16px}
+.search-wrap svg{
+  position:absolute;left:18px;top:50%;transform:translateY(-50%);
+  width:20px;height:20px;color:var(--text3);pointer-events:none;
+}
+#searchInput{
+  width:100%;padding:16px 20px 16px 50px;font-size:1rem;
+  border:1.5px solid var(--border);border-radius:12px;outline:none;
+  background:var(--surface);color:var(--text);
+  box-shadow:var(--shadow-md);
+  transition:var(--transition);font-family:inherit;
+}
+#searchInput::placeholder{color:var(--text3)}
+#searchInput:focus{
+  border-color:var(--accent);
+  box-shadow:var(--shadow-md),0 0 0 3px rgba(37,99,235,.1);
+}
+.search-hint{
+  font-size:.8rem;color:var(--text3);margin-top:8px;
+}
+
+/* Stats row */
+.stats-row{
+  display:flex;justify-content:center;gap:32px;margin-top:40px;flex-wrap:wrap;
+}
+.stat-item{text-align:center}
+.stat-num{
+  font-size:1.6rem;font-weight:800;color:var(--text);
+  letter-spacing:-.02em;
+}
+.stat-label{font-size:.78rem;color:var(--text3);font-weight:500;margin-top:2px}
+
+/* Tags */
+.popular-tags{
+  display:flex;justify-content:center;gap:8px;margin-top:28px;flex-wrap:wrap;
+}
+.popular-tags .ptag{
+  padding:6px 14px;border-radius:100px;font-size:.8rem;font-weight:500;
+  background:var(--surface);border:1px solid var(--border);color:var(--text2);
+  cursor:pointer;transition:var(--transition);
+}
+.popular-tags .ptag:hover{
+  border-color:var(--accent);color:var(--accent);background:var(--accent-light);
+}
+
+/* Container */
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+
+/* Cards section */
+.cards-section{padding:32px 0 80px;display:none}
+.cards-section.active{display:block}
+.cards-section .section-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;flex-wrap:wrap;gap:8px;
+}
+.section-head .result-text{font-size:.85rem;color:var(--text3);font-weight:500}
+.section-head .result-text strong{color:var(--text);font-weight:700}
+.cards-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:14px;
+}
+
+/* Card */
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:22px 24px;cursor:pointer;transition:var(--transition);
+  position:relative;
+}
+.card:hover{
+  border-color:#d4d4d8;box-shadow:var(--shadow-md);transform:translateY(-2px);
+}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.card-title{
+  font-size:1.05rem;font-weight:700;color:var(--text);
+  display:flex;align-items:center;gap:10px;flex:1;
+}
+.card-title .avatar{
+  width:40px;height:40px;border-radius:10px;
+  background:linear-gradient(135deg,var(--accent-light),#f5f3ff);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;flex-shrink:0;font-weight:800;color:var(--accent);
+}
+.card-arrow{
+  width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  color:var(--text3);transition:var(--transition);flex-shrink:0;
+}
+.card:hover .card-arrow{color:var(--accent);background:var(--accent-light)}
+.card-meta{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.card-meta .chip{
+  font-size:.72rem;font-weight:600;padding:3px 10px;border-radius:6px;
+}
+.chip-replies{background:var(--green-light);color:var(--green)}
+.chip-topics{background:var(--accent-light);color:var(--accent)}
+.card-questions{display:flex;flex-wrap:wrap;gap:5px}
+.card-questions .tag{
+  font-size:.7rem;padding:3px 9px;border-radius:6px;
+  background:var(--bg);color:var(--text2);font-weight:500;
+  white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis;
+  transition:var(--transition);
+}
+.card:hover .tag{background:var(--accent-light);color:var(--accent)}
+
+/* Empty */
+.empty-state{text-align:center;padding:80px 24px}
+.empty-state .eicon{font-size:2.5rem;margin-bottom:12px;opacity:.5}
+.empty-state p{font-size:.95rem;color:var(--text3)}
+
+/* Detail */
+.detail-view{
+  display:none;position:fixed;inset:0;z-index:100;
+  background:var(--bg);overflow-y:auto;
+}
+.detail-view.active{display:block}
+.detail-header{
+  position:sticky;top:0;z-index:10;
+  background:rgba(250,250,250,.88);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);padding:12px 24px;
+}
+.detail-header-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:14px}
+.btn-back{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 16px;border:1px solid var(--border);border-radius:10px;
+  background:var(--surface);cursor:pointer;
+  font-size:.85rem;font-weight:600;color:var(--text2);
+  transition:var(--transition);font-family:inherit;
+}
+.btn-back:hover{border-color:var(--accent);color:var(--accent)}
+.btn-back svg{width:16px;height:16px}
+.detail-title{
+  font-size:1.1rem;font-weight:700;flex:1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);
+}
+.detail-content{max-width:860px;margin:0 auto;padding:36px 24px 80px}
+.detail-content h1{font-size:1.8rem;font-weight:800;margin-bottom:8px;display:none}
+.detail-content h2{
+  font-size:1.15rem;font-weight:700;margin:28px 0 14px;
+  padding:12px 18px;background:var(--surface);border-radius:10px;
+  border-left:3px solid var(--accent);color:var(--text);
+}
+.detail-content h3{font-size:1rem;font-weight:600;margin:20px 0 10px;color:var(--text)}
+.detail-content p{margin-bottom:10px;color:var(--text2);line-height:1.8}
+.detail-content ul,.detail-content ol{margin:8px 0 14px 20px;color:var(--text2)}
+.detail-content li{margin-bottom:5px;line-height:1.7}
+.detail-content blockquote{
+  margin:14px 0;padding:14px 18px;
+  background:var(--accent-light);border-radius:10px;
+  border-left:3px solid var(--accent);color:var(--text2);font-size:.9rem;
+}
+.detail-content blockquote p{margin:0}
+.detail-content a{color:var(--accent);font-weight:500}
+.detail-content a:hover{text-decoration:underline}
+.detail-content hr{border:none;border-top:1px solid var(--border);margin:20px 0}
+.detail-content img{max-width:100%;border-radius:10px;margin:10px 0}
+.detail-content code{
+  background:var(--bg);padding:2px 7px;border-radius:6px;
+  font-size:.85em;font-family:'JetBrains Mono',monospace;
+}
+.detail-content pre{
+  background:#1e1e2e;color:#cdd6f4;padding:18px;border-radius:10px;
+  overflow-x:auto;margin:14px 0;font-size:.85rem;
+}
+.detail-content pre code{background:none;padding:0;color:inherit}
+.detail-content table{width:100%;border-collapse:collapse;margin:14px 0;border-radius:10px;overflow:hidden}
+.detail-content th,.detail-content td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)}
+.detail-content th{background:var(--accent-light);font-weight:600;color:var(--accent);font-size:.85rem}
+.detail-content tr:hover td{background:var(--accent-light)}
+.detail-content details{margin:14px 0;padding:14px 18px;background:var(--surface);border-radius:10px;border:1px solid var(--border)}
+.detail-content details summary{cursor:pointer;font-weight:600;color:var(--accent);outline:none}
+.detail-content details[open] summary{margin-bottom:10px}
+
+/* Loading */
+.loading{display:flex;align-items:center;justify-content:center;padding:80px;gap:10px;color:var(--text3)}
+.loading .spinner{
+  width:20px;height:20px;border:2.5px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin .6s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Footer */
+.footer{
+  text-align:center;padding:36px 24px;
+  border-top:1px solid var(--border);
+}
+.footer p{font-size:.8rem;color:var(--text3)}
+.footer a{color:var(--accent);font-weight:500}
+.footer a:hover{text-decoration:underline}
+
+/* Responsive */
+@media(max-width:640px){
+  .hero{min-height:auto;padding:100px 20px 60px}
+  .stats-row{gap:20px}
+  .cards-grid{grid-template-columns:1fr}
+  .card{padding:18px}
+  .detail-header-inner{gap:8px}
+  .detail-title{font-size:.95rem}
+}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+
+/* Card animation */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.card{animation:fadeUp .3s ease both}
+.card:nth-child(2){animation-delay:.03s}
+.card:nth-child(3){animation-delay:.06s}
+.card:nth-child(4){animation-delay:.09s}
+.card:nth-child(5){animation-delay:.12s}
+.card:nth-child(6){animation-delay:.15s}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge"><span class="dot"></span> 开源数据 · 实时搜索</div>
+    <h1>在<span class="highlight">真实评价</span>中<br>找到你的学校</h1>
+    <p>收录来自全国 3449 所高校的在校生真实反馈，涵盖宿舍、食堂、交通、校园生活等话题</p>
+
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="searchInput" type="text" placeholder="搜索学校名称，如「浙江大学」「PKU」..." autocomplete="off" autofocus>
+    </div>
+    <div class="search-hint" id="searchHint">输入关键词开始搜索</div>
+
+    <div class="popular-tags" id="popularTags">
+      <span class="ptag" onclick="quickSearch(this)">清华大学</span>
+      <span class="ptag" onclick="quickSearch(this)">北京大学</span>
+      <span class="ptag" onclick="quickSearch(this)">复旦大学</span>
+      <span class="ptag" onclick="quickSearch(this)">浙江大学</span>
+      <span class="ptag" onclick="quickSearch(this)">上海交通大学</span>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-item"><div class="stat-num" id="statSchools">3449</div><div class="stat-label">所高校</div></div>
+      <div class="stat-item"><div class="stat-num">真实</div><div class="stat-label">在校生评价</div></div>
+      <div class="stat-item"><div class="stat-num">25+</div><div class="stat-label">评价维度</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="cards-section" id="cardsSection">
+  <div class="container">
+    <div class="section-head">
+      <div class="result-text" id="resultText"></div>
+    </div>
+    <div class="cards-grid" id="cardsGrid"></div>
+    <div class="empty-state" id="emptyState" style="display:none">
+      <div class="eicon">🔍</div>
+      <p>没有找到匹配的学校，换个关键词试试</p>
+    </div>
+  </div>
+</section>
+
+<div class="detail-view" id="detailView">
+  <div class="detail-header">
+    <div class="detail-header-inner">
+      <button class="btn-back" id="btnBack">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        返回
+      </button>
+      <div class="detail-title" id="detailTitle"></div>
+    </div>
+  </div>
+  <div class="detail-content" id="detailContent">
+    <div class="loading"><div class="spinner"></div>加载中...</div>
+  </div>
+</div>
+
+<footer class="footer">
+  <p>数据来源：<a href="https://github.com/CollegesChat/university-information" target="_blank" rel="noopener">CollegesChat/university-information</a> · 共收录 <span id="footerCount">0</span> 所学校</p>
+</footer>
+
+<script>
+let universities = [];
+
+const searchInput = document.getElementById('searchInput');
+const searchHint = document.getElementById('searchHint');
+const cardsSection = document.getElementById('cardsSection');
+const cardsGrid = document.getElementById('cardsGrid');
+const emptyState = document.getElementById('emptyState');
+const resultText = document.getElementById('resultText');
+const detailView = document.getElementById('detailView');
+const detailTitle = document.getElementById('detailTitle');
+const detailContent = document.getElementById('detailContent');
+const btnBack = document.getElementById('btnBack');
+const footerCount = document.getElementById('footerCount');
+
+async function loadData() {
+  try {
+    const resp = await fetch('universities.json');
+    universities = await resp.json();
+    footerCount.textContent = universities.length;
+    document.getElementById('statSchools').textContent = universities.length;
+  } catch (e) {
+    searchHint.textContent = '数据加载失败，请刷新重试';
+    console.error(e);
+  }
+}
+
+function quickSearch(el) {
+  searchInput.value = el.textContent;
+  filterData(el.textContent);
+  searchInput.focus();
+}
+
+function renderCards(data) {
+  if (data.length === 0) {
+    cardsGrid.innerHTML = '';
+    emptyState.style.display = 'block';
+    resultText.innerHTML = '未找到匹配结果';
+    return;
+  }
+  emptyState.style.display = 'none';
+  const display = data.slice(0, 150);
+  cardsGrid.innerHTML = display.map((u, i) => {
+    const tags = u.questions.slice(0, 3).map(q =>
+      `<span class="tag">${escapeHtml(q)}</span>`
+    ).join('');
+    const moreTag = u.questions.length > 3 ? `<span class="tag">+${u.questions.length - 3}</span>` : '';
+    const initial = u.title.charAt(0);
+    return `
+      <div class="card" style="animation-delay:${Math.min(i * .03, .3)}s" onclick="openDetail('${escapeAttr(u.filename)}', '${escapeAttr(u.title)}')">
+        <div class="card-top">
+          <div class="card-title">
+            <span class="avatar">${initial}</span>
+            ${escapeHtml(u.title)}
+          </div>
+          <span class="card-arrow">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </span>
+        </div>
+        <div class="card-meta">
+          <span class="chip chip-replies">${u.respondents} 条回答</span>
+          <span class="chip chip-topics">${u.questions.length} 个话题</span>
+        </div>
+        <div class="card-questions">${tags}${moreTag}</div>
+      </div>`;
+  }).join('');
+  if (data.length > 150) {
+    resultText.innerHTML = `显示前 150 条，共 <strong>${data.length}</strong> 条匹配`;
+  } else {
+    resultText.innerHTML = `找到 <strong>${data.length}</strong> 所学校`;
+  }
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+function escapeAttr(str) {
+  return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+
+function filterData(query) {
+  if (!query.trim()) {
+    cardsSection.classList.remove('active');
+    cardsGrid.innerHTML = '';
+    emptyState.style.display = 'none';
+    searchHint.textContent = '输入关键词开始搜索';
+    return;
+  }
+  cardsSection.classList.add('active');
+  const q = query.toLowerCase();
+  const filtered = universities.filter(u =>
+    u.title.toLowerCase().includes(q) ||
+    u.filename.toLowerCase().includes(q) ||
+    u.questions.some(question => question.toLowerCase().includes(q))
+  );
+  renderCards(filtered);
+  searchHint.textContent = '';
+}
+
+let debounceTimer;
+searchInput.addEventListener('input', (e) => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => filterData(e.target.value), 120);
+});
+
+async function openDetail(filename, title) {
+  detailView.classList.add('active');
+  detailTitle.textContent = title;
+  detailContent.innerHTML = '<div class="loading"><div class="spinner"></div>加载中...</div>';
+  document.body.style.overflow = 'hidden';
+  try {
+    const resp = await fetch(`universities/${filename}`);
+    let md = await resp.text();
+    detailContent.innerHTML = renderMarkdown(md);
+  } catch (e) {
+    detailContent.innerHTML = '<p style="color:#ef4444;text-align:center;padding:60px">加载失败，请重试</p>';
+  }
+}
+
+function closeDetail() {
+  detailView.classList.remove('active');
+  document.body.style.overflow = '';
+  detailContent.innerHTML = '';
+}
+
+btnBack.addEventListener('click', closeDetail);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && detailView.classList.contains('active')) closeDetail();
+});
+
+function renderMarkdown(md) {
+  let html = md
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    .replace(/^> (.+)$/gm, '<blockquote><p>$1</p></blockquote>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" loading="lazy">')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+    .replace(/^---$/gm, '<hr>')
+    .replace(/^(- - -|\*\*\*)$/gm, '<hr>');
+
+  const lines = html.split('\n');
+  let result = '', inList = false, inDetail = false;
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i];
+    if (line.match(/<details>/)) { inDetail = true; result += line + '\n'; continue; }
+    if (line.match(/<\/details>/)) { inDetail = false; result += line + '\n'; continue; }
+    if (inDetail) { result += line + '\n'; continue; }
+    if (line.match(/^<h[1-6]/) || line.match(/^<blockquote/) || line.match(/^<hr/) || line.match(/^<img/) || line.match(/^<table/) || line.match(/^<pre/) || line.match(/^<details/)) {
+      if (inList) { result += '</ul>\n'; inList = false; }
+      result += line + '\n'; continue;
+    }
+    if (line.match(/^- /)) {
+      if (!inList) { result += '<ul>\n'; inList = true; }
+      result += '<li>' + line.substring(2) + '</li>\n'; continue;
+    }
+    if (line.match(/^\d+\. /)) {
+      if (!inList) { result += '<ol>\n'; inList = true; }
+      result += '<li>' + line.replace(/^\d+\. /, '') + '</li>\n'; continue;
+    }
+    if (inList && line.trim() === '') { result += '</ul>\n'; inList = false; continue; }
+    if (line.trim() === '') { if (inList) { result += '</ul>\n'; inList = false; } result += '\n'; continue; }
+    result += '<p>' + line + '</p>\n';
+  }
+  if (inList) result += '</ul>\n';
+  return result;
+}
+
+loadData();
+</script>
+</body>
+</html>
